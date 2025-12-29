@@ -4,12 +4,17 @@ from random import randint
 import math
 
 pygame.init()
+
+cols = 20
+rows = 20
+cell_size = 540 / cols
+
 screen = pygame.display.set_mode((781, 661))
 background = pygame.image.load("bg.png").convert()
 background = pygame.transform.scale(background, (781, 661))
 
 frame = pygame.image.load("overlay.png").convert_alpha()
-frame = pygame.transform.scale(frame, (540, 338))
+frame = pygame.transform.scale(frame, (540, 540))
 
 apple_img = pygame.image.load("redapple.png").convert_alpha()
 apple_img = pygame.transform.scale(apple_img, (30, 30))
@@ -33,8 +38,6 @@ clock = pygame.time.Clock()
 snakes = [[5,10]]
 direction = "right"
 
-cols = 16
-rows = 10
 apple = [randint(0, cols-1), randint(0, rows-1)]
 
 gold_apple = None        
@@ -118,7 +121,7 @@ def grid_to_center(cell, grid_x, grid_y, cell_size):
 def draw_snake_head(surface, pos, direction, near_food=False, dead=False):
     x, y = pos
     head_r = 14
-    base_color = (0, 220, 0) if not dead else (180, 180, 180)
+    base_color = (0,80,0) #if not dead else (180, 180, 180)
     pygame.draw.circle(surface, base_color, (int(x), int(y)), head_r)
 
     dir_map = {"up": (0,-1), "down": (0,1), "left": (-1,0), "right": (1,0)}
@@ -185,8 +188,10 @@ while running:
     screen.blit(background, (0, 0))
 
     # Vẽ overlay frame (căn giữa màn hình)
-    frame_x = (screen.get_width() - frame.get_width()) // 2
-    frame_y = (screen.get_height() - frame.get_height()) // 2
+    grid_width = cols * cell_size 
+    grid_height = rows * cell_size
+    frame_x = (screen.get_width() - grid_width) // 2
+    frame_y = (screen.get_height() - grid_height) // 2
     screen.blit(frame, (frame_x, frame_y))
 
     tail_x = snakes[0][0]
@@ -194,23 +199,21 @@ while running:
 
     # Draw grid
     GRID_COLOR = (30, 30, 30)
-    rows = 10   # số ô dọc
-    cols = 16   # số ô ngang
+    rows = 20   # số ô dọc
+    cols = 20   # số ô ngang
     cell_size = 540 / cols   # phủ kín chiều ngang, mỗi ô ≈ 31.76 px
     grid_x = frame_x
     grid_y = frame_y
 
     # Vẽ lưới 16x16 trong frame
-    for i in range(rows+1):
-        pygame.draw.line(screen, GRID_COLOR,
-                        (grid_x, grid_y + i*cell_size),
-                        (grid_x + cols*cell_size, grid_y + i*cell_size))
-    for j in range(cols+1):
-        pygame.draw.line(screen, GRID_COLOR,
-                        (grid_x + j*cell_size, grid_y),
-                        (grid_x + j*cell_size, grid_y + rows*cell_size))
-
-
+    #for i in range(int(rows)+1):
+        #pygame.draw.line(screen, GRID_COLOR,
+                        #(grid_x, grid_y + i*cell_size),
+                        #(grid_x + cols*cell_size, grid_y + i*cell_size))
+    #for j in range(cols+1):
+        #pygame.draw.line(screen, GRID_COLOR,
+                        #(grid_x + j*cell_size, grid_y),
+                        #(grid_x + j*cell_size, grid_y + rows*cell_size))
 
     # Chỉ cho phép vẽ trong khung lưới
     screen.set_clip(pygame.Rect(grid_x, grid_y, cols*cell_size, rows*cell_size))
